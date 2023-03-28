@@ -1,0 +1,506 @@
+{
+	"info": {
+		"_postman_id": "dec57e2d-6e80-46de-889c-8ca99a75ba1f",
+		"name": "GitHub API Apps",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "590263"
+	},
+	"item": [
+		{
+			"name": "Get authenticated App",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"\r",
+							"let currentTime=pm.variables.replaceIn(\"{{$timestamp}}\")\r",
+							"let time = new Date(parseInt(currentTime))\r",
+							"console.log(time)\r",
+							"console.log(parseInt(currentTime))\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api-url}}/app/installations",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"app",
+						"installations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Installation token",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"\r",
+							"let currentTime = pm.variables.replaceIn(\"{{$timestamp}}\")\r",
+							"let fromTime = parseInt(currentTime) - 60\r",
+							"let toTime = fromTime + 600\r",
+							"\r",
+							"pm.collectionVariables.set('fromTime', fromTime)\r",
+							"pm.collectionVariables.set('toTime', toTime)\r",
+							"\r",
+							"console.log('fromTime ' + fromTime)\r",
+							"console.log('toTime ' + toTime)\r",
+							"\r",
+							"// openssl pkcs8 -topk8 -inform PEM -outform PEM -in  /mnt/c/Users/LuisFraile/Downloads/demo-postman.2023-03-20.private-key.pem -out /mnt/c/Users/LuisFraile/Downloads/demo-postman.2023-03-20.private-key.pkcs8.pem -nocrypt"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let responseData=pm.response.json();\r",
+							"pm.environment.set(\"installation-token\", responseData.token);\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "jwt",
+					"jwt": [
+						{
+							"key": "payload",
+							"value": "{\r\n   \"iat\":  {{fromTime}},\r\n   \"exp\": {{toTime}},\r\n   \"iss\": \"{{app-id}}\"\r\n}",
+							"type": "string"
+						},
+						{
+							"key": "privateKey",
+							"value": "{{private-key}}",
+							"type": "string"
+						},
+						{
+							"key": "algorithm",
+							"value": "RS256",
+							"type": "string"
+						},
+						{
+							"key": "isSecretBase64Encoded",
+							"value": false,
+							"type": "boolean"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "headerPrefix",
+							"value": "Bearer",
+							"type": "string"
+						},
+						{
+							"key": "queryParamKey",
+							"value": "token",
+							"type": "string"
+						},
+						{
+							"key": "header",
+							"value": "{}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{api-url}}/app/installations/{{installation-id}}/access_tokens",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"app",
+						"installations",
+						"{{installation-id}}",
+						"access_tokens"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Issues",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{installation-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api-url}}/repos/lfraileorg/demo-workflow-templates/issues",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"repos",
+						"lfraileorg",
+						"demo-workflow-templates",
+						"issues"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Events",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{installation-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api-url}}/orgs/lfraileorg/events",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"orgs",
+						"lfraileorg",
+						"events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get repositories paginated",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{installation-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.github.com/organizations/lfraileorg/repos?per_page=1",
+					"protocol": "https",
+					"host": [
+						"api",
+						"github",
+						"com"
+					],
+					"path": [
+						"organizations",
+						"lfraileorg",
+						"repos"
+					],
+					"query": [
+						{
+							"key": "per_page",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get repositories ETag",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{installation-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "If-None-Match",
+						"value": "W/\"81ae659d801b2c8e6c8e1e8ae2e397c15d8ae052dee510f4f908be80c50d25d3\"",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "https://api.github.com/orgs/lfraileorg/repos",
+					"protocol": "https",
+					"host": [
+						"api",
+						"github",
+						"com"
+					],
+					"path": [
+						"orgs",
+						"lfraileorg",
+						"repos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[GraphQL] Get Issues",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{installation-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query FindRepo {\r\n    rateLimit{\r\n        remaining\r\n        limit\r\n        cost\r\n    }\r\n    repository(owner: \"lfraileorg\", name: \"NETCore_CI_CD\") {\r\n        issues(first: 5){\r\n                nodes{\r\n                title\r\n                id\r\n                \r\n            }\r\n            pageInfo{\r\n                startCursor\r\n                endCursor\r\n                hasNextPage\r\n                hasPreviousPage\r\n            }\r\n        }        \r\n    }\r\n\t\r\n}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "{{api-url}}/graphql",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[GraphQL] Get repos",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{installation-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query($org: String!) {\r\n  organization(login: $org) {\r\n    repositories(first: 10){\r\n      nodes {\r\n        id\r\n        name\r\n      }\r\n    }\r\n  }\r\n}\r\n\r\n",
+						"variables": "{\r\n\t\"org\": \"lfraile-git-school\"\r\n}"
+					}
+				},
+				"url": {
+					"raw": "{{api-url}}/graphql",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[GraphQL][Mutation] Rename repo",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{personal-access-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation($input: UpdateRepositoryInput!) {\r\n  updateRepository(input: $input) {\r\n    clientMutationId\r\n    repository {\r\n      name\r\n    }\r\n  }\r\n}\r\n\r\n",
+						"variables": "{\r\n\t\"input\": {\r\n\t\t\"repositoryId\": \"R_kgDOJKXnlg\",\r\n\t\t\"name\": \"Test from graphQL prisa\"\r\n\t}\r\n}\r\n\r\n"
+					}
+				},
+				"url": {
+					"raw": "{{api-url}}/graphql",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[GraphQL] Costly query",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{installation-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query {\r\n\trateLimit{\r\n\t\tcost\t\r\n\t\tnodeCount\r\n\t\tremaining\r\n        resetAt\t\t\r\n\t}\r\n    organization(login:\"lfraileorg\"){\r\n        \r\n        repositories(first: 100) {\r\n        edges {\r\n            node {\r\n            id\r\n            issues(first: 70) {\r\n                edges {\r\n                node {\r\n                    id\r\n\r\n                    labels(first: 60) {\r\n                    edges {\r\n                        node {\r\n                        id\r\n                        name\r\n                        }\r\n                    }\r\n                    }\r\n                }\r\n                }\r\n            }\r\n            }\r\n        }\r\n        }\r\n    }\r\n}\r\n",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "{{api-url}}/graphql",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "jwt",
+		"jwt": [
+			{
+				"key": "payload",
+				"value": "{\r\n   \"iat\":  {{fromTime}},\r\n   \"exp\": {{toTime}},\r\n   \"iss\": \"{{app-id}}\"\r\n}",
+				"type": "string"
+			},
+			{
+				"key": "privateKey",
+				"value": "{{private-key}}",
+				"type": "string"
+			},
+			{
+				"key": "algorithm",
+				"value": "RS256",
+				"type": "string"
+			},
+			{
+				"key": "isSecretBase64Encoded",
+				"value": false,
+				"type": "boolean"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			},
+			{
+				"key": "headerPrefix",
+				"value": "Bearer",
+				"type": "string"
+			},
+			{
+				"key": "queryParamKey",
+				"value": "token",
+				"type": "string"
+			},
+			{
+				"key": "header",
+				"value": "{}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"",
+					"let currentTime = pm.variables.replaceIn(\"{{$timestamp}}\")",
+					"let fromTime = parseInt(currentTime) - 60",
+					"let toTime = fromTime + 10",
+					"",
+					"pm.collectionVariables.set('fromTime', fromTime)",
+					"pm.collectionVariables.set('toTime', toTime)",
+					"",
+					"console.log('fromTime ' + fromTime)",
+					"console.log('toTime ' + toTime)",
+					"",
+					"// openssl pkcs8 -topk8 -inform PEM -outform PEM -in  /mnt/c/Users/LuisFraile/Downloads/demo-postman.2023-03-20.private-key.pem -out /mnt/c/Users/LuisFraile/Downloads/demo-postman.2023-03-20.private-key.pkcs8.pem -nocrypt"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "api-url",
+			"value": "https://api.github.com",
+			"type": "string"
+		},
+		{
+			"key": "fromTime",
+			"value": ""
+		},
+		{
+			"key": "toTime",
+			"value": ""
+		}
+	]
+}
