@@ -58,7 +58,7 @@
 							"console.log('fromTime ' + fromTime)\r",
 							"console.log('toTime ' + toTime)\r",
 							"\r",
-							"// openssl pkcs8 -topk8 -inform PEM -outform PEM -in  /mnt/c/Users/LuisFraile/Downloads/demo-postman.2023-03-20.private-key.pem -out /mnt/c/Users/LuisFraile/Downloads/demo-postman.2023-03-20.private-key.pkcs8.pem -nocrypt"
+							"// openssl pkcs8 -topk8 -inform PEM -outform PEM -in  ./demo-postman.2023-03-20.private-key.pem -out ./demo-postman.2023-03-20.private-key.pkcs8.pem -nocrypt"
 						],
 						"type": "text/javascript"
 					}
@@ -140,6 +140,33 @@
 			"response": []
 		},
 		{
+			"name": "Rate limits",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{personal-access-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api-url}}/rate_limit",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"rate_limit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get Issues",
 			"request": {
 				"auth": {
@@ -214,15 +241,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://api.github.com/organizations/lfraileorg/repos?per_page=1",
-					"protocol": "https",
+					"raw": "{{api-url}}/orgs/lfraileorg/repos?per_page=1",
 					"host": [
-						"api",
-						"github",
-						"com"
+						"{{api-url}}"
 					],
 					"path": [
-						"organizations",
+						"orgs",
 						"lfraileorg",
 						"repos"
 					],
@@ -253,23 +277,58 @@
 				"header": [
 					{
 						"key": "If-None-Match",
-						"value": "W/\"81ae659d801b2c8e6c8e1e8ae2e397c15d8ae052dee510f4f908be80c50d25d3\"",
+						"value": "W/\"e04c740ac70ce8e6b03fa172ea2ed6f92b8cd29d64bdb88814f8f15c84d2c506\"",
 						"type": "text",
 						"disabled": true
 					}
 				],
 				"url": {
-					"raw": "https://api.github.com/orgs/lfraileorg/repos",
-					"protocol": "https",
+					"raw": "{{api-url}}/orgs/lfraileorg/repos",
 					"host": [
-						"api",
-						"github",
-						"com"
+						"{{api-url}}"
 					],
 					"path": [
 						"orgs",
 						"lfraileorg",
 						"repos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Issue (Last Modified)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{installation-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "If-Modified-Since",
+						"value": "Thu, 30 Mar 2023 10:26:43 GMT",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{api-url}}/repos/lfraileorg/demo-workflow-templates/issues/1",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"repos",
+						"lfraileorg",
+						"demo-workflow-templates",
+						"issues",
+						"1"
 					]
 				}
 			},
@@ -293,7 +352,7 @@
 				"body": {
 					"mode": "graphql",
 					"graphql": {
-						"query": "query FindRepo {\r\n    rateLimit{\r\n        remaining\r\n        limit\r\n        cost\r\n    }\r\n    repository(owner: \"lfraileorg\", name: \"NETCore_CI_CD\") {\r\n        issues(first: 5){\r\n                nodes{\r\n                title\r\n                id\r\n                \r\n            }\r\n            pageInfo{\r\n                startCursor\r\n                endCursor\r\n                hasNextPage\r\n                hasPreviousPage\r\n            }\r\n        }        \r\n    }\r\n\t\r\n}",
+						"query": "query FindRepo {\r\n    repository(owner: \"lfraileorg\", name: \"NETCore_CI_CD\") {\r\n        issues(first: 5){\r\n                nodes{\r\n                title\r\n                id\r\n                \r\n            }\r\n            pageInfo{\r\n                startCursor\r\n                endCursor\r\n                hasNextPage\r\n                hasPreviousPage\r\n            }\r\n        }        \r\n    }\r\n\t\r\n}",
 						"variables": ""
 					}
 				},
@@ -474,7 +533,7 @@
 					"console.log('fromTime ' + fromTime)",
 					"console.log('toTime ' + toTime)",
 					"",
-					"// openssl pkcs8 -topk8 -inform PEM -outform PEM -in  /mnt/c/Users/LuisFraile/Downloads/demo-postman.2023-03-20.private-key.pem -out /mnt/c/Users/LuisFraile/Downloads/demo-postman.2023-03-20.private-key.pkcs8.pem -nocrypt"
+					"// openssl pkcs8 -topk8 -inform PEM -outform PEM -in  ./demo-postman.2023-03-20.private-key.pem -out ./demo-postman.2023-03-20.private-key.pkcs8.pem -nocrypt"
 				]
 			}
 		},
