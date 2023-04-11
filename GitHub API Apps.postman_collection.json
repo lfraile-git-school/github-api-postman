@@ -58,7 +58,7 @@
 							"console.log('fromTime ' + fromTime)\r",
 							"console.log('toTime ' + toTime)\r",
 							"\r",
-							"// openssl pkcs8 -topk8 -inform PEM -outform PEM -in  ./demo-postman.2023-03-20.private-key.pem -out ./demo-postman.2023-03-20.private-key.pkcs8.pem -nocrypt"
+							"// openssl pkcs8 -topk8 -inform PEM -outform PEM -in  /mnt/c/Users/LuisFraile/Downloads/demo-postman.2023-03-20.private-key.pem -out /mnt/c/Users/LuisFraile/Downloads/demo-postman.2023-03-20.private-key.pkcs8.pem -nocrypt"
 						],
 						"type": "text/javascript"
 					}
@@ -352,7 +352,7 @@
 				"body": {
 					"mode": "graphql",
 					"graphql": {
-						"query": "query FindRepo {\r\n    repository(owner: \"lfraileorg\", name: \"NETCore_CI_CD\") {\r\n        issues(first: 5){\r\n                nodes{\r\n                title\r\n                id\r\n                \r\n            }\r\n            pageInfo{\r\n                startCursor\r\n                endCursor\r\n                hasNextPage\r\n                hasPreviousPage\r\n            }\r\n        }        \r\n    }\r\n\t\r\n}",
+						"query": "query FindRepo {\r\n    organization(login:\"lfraileorg\"){\r\n    repositories(first:5) {\r\n        nodes{\r\n            name\r\n            nameWithOwner\r\n            issues(first: 5){\r\n                    nodes{                \r\n                        title\r\n                        id\r\n                        url          \r\n                }\r\n                pageInfo{\r\n                    startCursor\r\n                    endCursor\r\n                    hasNextPage\r\n                    hasPreviousPage                \r\n                }\r\n            }    \r\n        }    \r\n    }\r\n    }\r\n}",
 						"variables": ""
 					}
 				},
@@ -420,8 +420,8 @@
 				"body": {
 					"mode": "graphql",
 					"graphql": {
-						"query": "mutation($input: UpdateRepositoryInput!) {\r\n  updateRepository(input: $input) {\r\n    clientMutationId\r\n    repository {\r\n      name\r\n    }\r\n  }\r\n}\r\n\r\n",
-						"variables": "{\r\n\t\"input\": {\r\n\t\t\"repositoryId\": \"R_kgDOJKXnlg\",\r\n\t\t\"name\": \"Test from graphQL prisa\"\r\n\t}\r\n}\r\n\r\n"
+						"query": "mutation($input: UpdateRepositoryInput!) {\r\n  updateRepository(input: $input) {\r\n    clientMutationId\r\n    repository {\r\n      name\r\n      description\r\n    }\r\n  }\r\n}\r\n\r\n",
+						"variables": "{\r\n\t\"input\": {\r\n\t\t\"repositoryId\": \"R_kgDOJKXnlg\",\r\n\t\t\"name\": \"Test from graphQL postman\"\r\n\t}\r\n}\r\n\r\n"
 					}
 				},
 				"url": {
@@ -444,7 +444,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{installation-token}}",
+							"value": "{{personal-access-token}}",
 							"type": "string"
 						}
 					]
@@ -533,7 +533,7 @@
 					"console.log('fromTime ' + fromTime)",
 					"console.log('toTime ' + toTime)",
 					"",
-					"// openssl pkcs8 -topk8 -inform PEM -outform PEM -in  ./demo-postman.2023-03-20.private-key.pem -out ./demo-postman.2023-03-20.private-key.pkcs8.pem -nocrypt"
+					"// openssl pkcs8 -topk8 -inform PEM -outform PEM -in  /mnt/c/Users/LuisFraile/Downloads/demo-postman.2023-03-20.private-key.pem -out /mnt/c/Users/LuisFraile/Downloads/demo-postman.2023-03-20.private-key.pkcs8.pem -nocrypt"
 				]
 			}
 		},
