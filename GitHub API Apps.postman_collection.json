@@ -1,0 +1,721 @@
+{
+	"info": {
+		"_postman_id": "bcdcbcd0-64e9-4298-91d5-1a68912cb5a2",
+		"name": "GitHub API Apps",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "590263"
+	},
+	"item": [
+		{
+			"name": "Get authenticated App",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"\r",
+							"let currentTime=pm.variables.replaceIn(\"{{$timestamp}}\")\r",
+							"let time = new Date(parseInt(currentTime))\r",
+							"console.log(time)\r",
+							"console.log(parseInt(currentTime))\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api-url}}/app/installations",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"app",
+						"installations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Installation token",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"\r",
+							"let currentTime = pm.variables.replaceIn(\"{{$timestamp}}\")\r",
+							"let fromTime = parseInt(currentTime) - 10\r",
+							"let toTime = fromTime + 600\r",
+							"\r",
+							"pm.collectionVariables.set('fromTime', fromTime)\r",
+							"pm.collectionVariables.set('toTime', toTime)\r",
+							"\r",
+							"console.log('fromTime ' + fromTime)\r",
+							"console.log('toTime ' + toTime)\r",
+							"\r",
+							"// openssl pkcs8 -topk8 -inform PEM -outform PEM -in  /mnt/c/Users/LuisFraile/Downloads/demo-postman.2023-03-20.private-key.pem -out /mnt/c/Users/LuisFraile/Downloads/demo-postman.2023-03-20.private-key.pkcs8.pem -nocrypt"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let responseData=pm.response.json();\r",
+							"pm.environment.set(\"installation-token\", responseData.token);\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "jwt",
+					"jwt": [
+						{
+							"key": "payload",
+							"value": "{\r\n   \"iat\":  {{fromTime}},\r\n   \"exp\": {{toTime}},\r\n   \"iss\": \"{{app-id}}\"\r\n}",
+							"type": "string"
+						},
+						{
+							"key": "privateKey",
+							"value": "{{private-key}}",
+							"type": "string"
+						},
+						{
+							"key": "algorithm",
+							"value": "RS256",
+							"type": "string"
+						},
+						{
+							"key": "isSecretBase64Encoded",
+							"value": false,
+							"type": "boolean"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "headerPrefix",
+							"value": "Bearer",
+							"type": "string"
+						},
+						{
+							"key": "queryParamKey",
+							"value": "token",
+							"type": "string"
+						},
+						{
+							"key": "header",
+							"value": "{}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{api-url}}/app/installations/{{installation-id}}/access_tokens",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"app",
+						"installations",
+						"{{installation-id}}",
+						"access_tokens"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Events",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{installation-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api-url}}/repos/{{organization}}/{{repo-name}}/events",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"repos",
+						"{{organization}}",
+						"{{repo-name}}",
+						"events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Issues",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{personal-access-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api-url}}/repos/{{organization}}/{{repo-name}}/issues",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"repos",
+						"{{organization}}",
+						"{{repo-name}}",
+						"issues"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get issues paginated",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{personal-access-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api-url}}/repos/{{organization}}/{{repo-name}}/issues?per_page=1&page=1",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"repos",
+						"{{organization}}",
+						"{{repo-name}}",
+						"issues"
+					],
+					"query": [
+						{
+							"key": "per_page",
+							"value": "1"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Issues ETag",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{installation-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "If-None-Match",
+						"value": "W/\"c405d6580d22ec6f5ebf835bf10b6446baec65286ffce7ea603192853b8dca25\"",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{api-url}}/repos/{{organization}}/{{repo-name}}/issues",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"repos",
+						"{{organization}}",
+						"{{repo-name}}",
+						"issues"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Issue (Last Modified)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{installation-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "If-Modified-Since",
+						"value": "Sat, 18 Nov 2023 15:00:46 GMT",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{api-url}}/repos/{{organization}}/{{repo-name}}/issues/1",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"repos",
+						"{{organization}}",
+						"{{repo-name}}",
+						"issues",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Rate limits",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{personal-access-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api-url}}/rate_limit",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"rate_limit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[GraphQL] Introspection",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{installation-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query {\r\n    __schema {        \r\n        types {\r\n        name\r\n        kind\r\n        description\r\n        fields {\r\n            name\r\n            }\r\n        }\r\n    }\r\n    __type(name: \"Repository\") {\r\n    name\r\n    kind\r\n    description\r\n    fields {\r\n      name\r\n    }\r\n  }\r\n}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "{{api-url}}/graphql",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[GraphQL] Get Issues",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{installation-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query($org: String!)  {\r\n    \trateLimit{\r\n\t\tcost\t\r\n\t\tnodeCount\r\n\t\tremaining\r\n        resetAt\r\n    }\r\n    organization(login: $org){          \r\n        id              \r\n        repo: repositories(first:5, orderBy: { field: CREATED_AT, direction: DESC}) {            \r\n            pageInfo{                \r\n                startCursor\r\n                endCursor\r\n                hasNextPage\r\n                hasPreviousPage                                                \r\n            }\r\n            nodes{                                \r\n                name\r\n                nameWithOwner \r\n                createdAt           \r\n                issues(first: 5 ){\r\n                   pageInfo{\r\n                        startCursor\r\n                    }\r\n                    nodes{ \r\n                            url            \r\n                            title\r\n                            id       \r\n                    }                                 \r\n                }                  \r\n            }  \r\n\r\n            }\r\n        }\r\n}",
+						"variables": "{\r\n    \"org\":\"{{organization}}\"\r\n}"
+					}
+				},
+				"url": {
+					"raw": "{{api-url}}/graphql",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[GraphQL] Fragments",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{personal-access-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query {\r\n  organization(login: \"{{organization}}\") {\r\n    auditLog(first: 3){\r\n      nodes {\r\n        ... on AuditEntry {\r\n          action          \r\n        }        \r\n      }\r\n    }\r\n  }\r\n}\r\n",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "{{api-url}}/graphql",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[GraphQL] Get languages",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{installation-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query FindRepo {\r\n    organization(login:\"{{organization}}\"){\r\n        repositories(first:100) {\r\n            totalCount\r\n            nodes{            \r\n                nameWithOwner\r\n                languages(first:100){\r\n                    totalCount\r\n                    nodes{\r\n                        name\r\n                    }\r\n                } \r\n            }\r\n            pageInfo{\r\n                startCursor\r\n                endCursor\r\n                hasNextPage\r\n                hasPreviousPage                \r\n            }        \r\n        }\r\n    }\r\n}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "{{api-url}}/graphql",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[GraphQL] Get repos",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{installation-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query($org: String!) {\r\n  organization(login: $org) {\r\n    repositories(first: 10, privacy: PRIVATE, orderBy: { field: CREATED_AT, direction: DESC}){\r\n      nodes {\r\n        id\r\n        name\r\n      }\r\n    }\r\n  }\r\n}\r\n\r\n",
+						"variables": "{\r\n\t\"org\": \"{{organization}}\"\r\n}"
+					}
+				},
+				"url": {
+					"raw": "{{api-url}}/graphql",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[GraphQL][Mutation] Create issue",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{personal-access-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation($input: CreateIssueInput!) {\r\n  createIssue(input: $input) {\r\n    clientMutationId\r\n    issue {\r\n      id,\r\n      title,\r\n      bodyHTML\r\n    }\r\n  }\r\n}\r\n\r\n",
+						"variables": "{\r\n    \"input\": {\r\n        \"title\": \"Hey there\",\r\n        \"repositoryId\": \"{{repository-graph-node-id}}\",\r\n        \"body\" :\"*This is amazing*\"\r\n    }\r\n}"
+					}
+				},
+				"url": {
+					"raw": "{{api-url}}/graphql",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[GraphQL][Mutation] Delete Issue",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{personal-access-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation($input: DeleteIssueInput!) {\r\n  deleteIssue(input: $input) {\r\n    clientMutationId   \r\n  }\r\n}\r\n\r\n",
+						"variables": "{\r\n    \"input\": {\r\n        \"issueId\":\"I_kwDOKvFa3s53PSfb\"\r\n    }\r\n}"
+					}
+				},
+				"url": {
+					"raw": "{{api-url}}/graphql",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[GraphQL] Costly query",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{personal-access-token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query {\r\n\trateLimit{\r\n\t\tcost\t\r\n        limit\r\n\t\tnodeCount\r\n\t\tremaining\r\n        resetAt\r\n    }\r\n    organization(login: \"{{organization}}\"){        \r\n        repositories(first: 100) {\r\n            edges {\r\n                node {\r\n                id\r\n                issues(first: 70) {\r\n                    edges {\r\n                        node {\r\n                            id\r\n                            labels(first: 60) {\r\n                                edges {\r\n                                    node {\r\n                                        id\r\n                                        name\r\n                                        }\r\n                                    }\r\n                                }\r\n                            }\r\n                        }\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "{{api-url}}/graphql",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "jwt",
+		"jwt": [
+			{
+				"key": "payload",
+				"value": "{\r\n   \"iat\":  {{fromTime}},\r\n   \"exp\": {{toTime}},\r\n   \"iss\": \"{{app-id}}\"\r\n}",
+				"type": "string"
+			},
+			{
+				"key": "privateKey",
+				"value": "{{private-key}}",
+				"type": "string"
+			},
+			{
+				"key": "algorithm",
+				"value": "RS256",
+				"type": "string"
+			},
+			{
+				"key": "isSecretBase64Encoded",
+				"value": false,
+				"type": "boolean"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			},
+			{
+				"key": "headerPrefix",
+				"value": "Bearer",
+				"type": "string"
+			},
+			{
+				"key": "queryParamKey",
+				"value": "token",
+				"type": "string"
+			},
+			{
+				"key": "header",
+				"value": "{}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"",
+					"let currentTime = pm.variables.replaceIn(\"{{$timestamp}}\")",
+					"let fromTime = parseInt(currentTime) - 60",
+					"let toTime = fromTime + 10",
+					"",
+					"pm.collectionVariables.set('fromTime', fromTime)",
+					"pm.collectionVariables.set('toTime', toTime)",
+					"",
+					"console.log('fromTime ' + fromTime)",
+					"console.log('toTime ' + toTime)",
+					"",
+					"// openssl pkcs8 -topk8 -inform PEM -outform PEM -in  /mnt/c/Users/LuisFraile/Downloads/demo-postman.2023-03-20.private-key.pem -out /mnt/c/Users/LuisFraile/Downloads/demo-postman.2023-03-20.private-key.pkcs8.pem -nocrypt"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "api-url",
+			"value": "https://api.github.com",
+			"type": "string"
+		},
+		{
+			"key": "fromTime",
+			"value": ""
+		},
+		{
+			"key": "toTime",
+			"value": ""
+		},
+		{
+			"key": "repo-name",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "organization",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "repository-graph-node-id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
